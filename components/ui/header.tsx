@@ -12,7 +12,10 @@ export default function Header() {
           <div className="flex flex-1 items-center">
             <Logo />
           </div>
-
+          {/* K8mpatible name header */}
+          <div className="flex flex-1 items-center justify-center">
+            <h1 className="text-xl font-semibold text-white">K8mpatible</h1>
+          </div>
           {/* Desktop sign in links */}
           <ul className="flex flex-1 items-center justify-end gap-3">
             <li>

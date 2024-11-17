@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Home - Open PRO",
+  title: "Home - K8mpatible",
   description: "Page description",
 };
 
