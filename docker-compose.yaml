@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: nextjs123
+      POSTGRES_USER: k8mpatible
+      POSTGRES_DB: k8mpatible
+    # Expose the Postgres port to the host machine,
+    # so you can inspect and administrate it
+    ports:
+      - '5432:5432'
