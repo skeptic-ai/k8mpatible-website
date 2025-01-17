@@ -19,6 +19,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             // If your environment variable is named differently than default
 
             from: "noreply@k8mpatible.com"
+
         }),
     ],
+    pages: {
+        signIn: "/signin",
+    },
+    callbacks: {
+        async redirect({ url, baseUrl }) {
+            return '/dashboard'
+        },
+    },
+
 })
