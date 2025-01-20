@@ -24,11 +24,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     ],
     pages: {
         signIn: "/signin",
+        signOut: "/signout",
     },
     callbacks: {
         async redirect({ url, baseUrl }) {
             return '/dashboard'
         },
+        signIn({ account }) {
+
+            console.log(account)
+            if (!account) return false
+            return account?.providerAccountId.endsWith('@k8mpatible.com')
+        }
     },
 
 })

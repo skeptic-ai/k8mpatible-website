@@ -45,4 +45,12 @@ CREATE TABLE users
  
   PRIMARY KEY (id)
 );
- 
+
+CREATE TABLE customers
+(
+    id SERIAL,  
+    contact_name VARCHAR(255),
+    company_name VARCHAR(255),
+    contact_email VARCHAR(255),
+
+)
