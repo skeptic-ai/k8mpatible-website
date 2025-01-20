@@ -2,6 +2,7 @@ import NextAuth from "next-auth"
 import PostgresAdapter from "@auth/pg-adapter"
 import { Pool } from "pg"
 import Sendgrid from "next-auth/providers/sendgrid"
+import { IsEmailEnrolled } from "./components/lib/data"
 const pool = new Pool({
     host: process.env.DATABASE_HOST,
     user: process.env.DATABASE_USER,
@@ -34,7 +35,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
             console.log(account)
             if (!account) return false
-            return account?.providerAccountId.endsWith('@k8mpatible.com')
+            // return account?.providerAccountId.endsWith('@k8mpatible.com')
+            return IsEmailEnrolled(account.providerAccountId)
         }
     },
 

@@ -49,8 +49,9 @@ CREATE TABLE users
 CREATE TABLE customers
 (
     id SERIAL,  
-    contact_name VARCHAR(255),
-    company_name VARCHAR(255),
-    contact_email VARCHAR(255),
+    name VARCHAR(255),
+    organization VARCHAR(255),
+    email VARCHAR(255),
+    PRIMARY KEY (id)
+);
 
-)
