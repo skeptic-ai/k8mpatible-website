@@ -232,3 +232,49 @@ export async function createCluster(
     revalidatePath('/dashboard/clusters');
     redirect('/dashboard/clusters');
 }
+
+
+export async function getClusters() {
+    const client = await pool.connect()
+    const session = await auth()
+    const email = session?.user?.email || ""
+
+    try {
+        // Get customer ID from email
+        const customerResult = await client.query(
+            'SELECT id FROM customers WHERE email = $1',
+            [email]
+        )
+
+        if (customerResult.rows.length === 0) {
+            return []
+        }
+
+        const customerId = customerResult.rows[0].id
+
+        // Get all clusters with provider-specific fields
+        const clustersResult = await client.query(`
+            SELECT 
+                id,
+                name,
+                provider,
+                location,
+                created_at,
+                aws_access_key_id,
+                gcp_service_account_key,
+                azure_tenant_id,
+                azure_subscription_id,
+                azure_resource_group
+            FROM clusters
+            WHERE customer_id = $1
+        `, [customerId])
+
+        return clustersResult.rows
+
+    } catch (error) {
+        console.error('Error fetching clusters:', error)
+        return []
+    } finally {
+        client.release()
+    }
+}
