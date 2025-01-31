@@ -1,4 +1,5 @@
 "use server";
+import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { Pool } from 'pg'
@@ -63,4 +64,171 @@ export async function EnrollCustomer(prevState: State, formData: FormData) {
 
 
     redirect('/signin')
+}
+
+
+const BaseClusterSchema = z.object({
+    name: z.string().min(1, "Cluster name is required"),
+    provider: z.enum(["aws", "gcp", "azure"]),
+    location: z.string().min(1, "Location is required"),
+});
+
+const AWSClusterSchema = BaseClusterSchema.extend({
+    provider: z.literal("aws"),
+    awsAccessKeyId: z.string().min(1, "AWS Access Key ID is required"),
+    awsSecretAccessKey: z.string().min(1, "AWS Secret Access Key is required"),
+});
+
+const GCPClusterSchema = BaseClusterSchema.extend({
+    provider: z.literal("gcp"),
+    gcpServiceAccountKey: z.string()
+        .min(1, "GCP Service Account Key is required")
+        .refine((val) => {
+            try {
+                JSON.parse(val);
+                return true;
+            } catch {
+                return false;
+            }
+        }, "Invalid JSON format for GCP Service Account Key"),
+});
+
+const AzureClusterSchema = BaseClusterSchema.extend({
+    provider: z.literal("azure"),
+    azureTenantId: z.string().min(1, "Azure Tenant ID is required"),
+    azureClientId: z.string().min(1, "Azure Client ID is required"),
+    azureClientSecret: z.string().min(1, "Azure Client Secret is required"),
+    azureSubscriptionId: z.string().min(1, "Azure Subscription ID is required"),
+    azureResourceGroup: z.string().min(1, "Azure Resource Group is required"),
+});
+
+const CreateClusterSchema = z.discriminatedUnion("provider", [
+    AWSClusterSchema,
+    GCPClusterSchema,
+    AzureClusterSchema,
+]);
+
+export type ClusterState = {
+    errors?: {
+        name?: string[];
+        provider?: string[];
+        location?: string[];
+        awsAccessKeyId?: string[];
+        awsSecretAccessKey?: string[];
+        gcpServiceAccountKey?: string[];
+        azureTenantId?: string[];
+        azureClientId?: string[];
+        azureClientSecret?: string[];
+        azureSubscriptionId?: string[];
+        azureResourceGroup?: string[];
+    };
+    message?: string | null;
+};
+
+export async function createClusterGCP(prevState: ClusterState, formData: FormData) {
+    return createCluster(prevState, formData, "gcp")
+}
+export async function createCluster(
+    prevState: ClusterState,
+    formData: FormData,
+    provider: string
+) {
+    const client = await pool.connect();
+    const session = await auth()
+    const email = session?.user?.email || ""
+    console.log("creating cluster for user", email)
+    try {
+        // First, validate all the form data
+        const validatedData = CreateClusterSchema.safeParse({
+            name: formData.get('name'),
+            provider: provider,
+            location: formData.get('location'),
+            // AWS fields
+            awsAccessKeyId: formData.get('awsAccessKeyId'),
+            awsSecretAccessKey: formData.get('awsSecretAccessKey'),
+            // GCP fields
+            gcpServiceAccountKey: formData.get('gcpServiceAccountKey'),
+            // Azure fields
+            azureTenantId: formData.get('azureTenantId'),
+            azureClientId: formData.get('azureClientId'),
+            azureClientSecret: formData.get('azureClientSecret'),
+            azureSubscriptionId: formData.get('azureSubscriptionId'),
+            azureResourceGroup: formData.get('azureResourceGroup'),
+        });
+
+        if (!validatedData.success) {
+            console.log("not validated", validatedData.error.flatten().fieldErrors)
+            return {
+                errors: validatedData.error.flatten().fieldErrors,
+                message: 'Missing or invalid fields. Failed to create cluster.',
+            };
+        }
+
+        // Get customer ID from email
+        const customerResult = await client.query(
+            'SELECT id FROM customers WHERE email = $1',
+            [email]
+        );
+
+        if (customerResult.rows.length === 0) {
+            return {
+                message: 'Customer not found.',
+            };
+        }
+
+        const customerId = customerResult.rows[0].id;
+        const data = validatedData.data;
+
+        // Begin transaction
+        await client.query('BEGIN');
+
+        // Insert cluster with provider-specific fields
+        const insertQuery = `
+            INSERT INTO clusters (
+                customer_id,
+                name,
+                provider,
+                location,
+                aws_access_key_id,
+                aws_secret_access_key,
+                gcp_service_account_key,
+                azure_tenant_id,
+                azure_client_id,
+                azure_client_secret,
+                azure_subscription_id,
+                azure_resource_group
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            RETURNING id`;
+
+        const values = [
+            customerId,
+            data.name,
+            data.provider,
+            data.location,
+            data.provider === 'aws' ? data.awsAccessKeyId : null,
+            data.provider === 'aws' ? data.awsSecretAccessKey : null,
+            data.provider === 'gcp' ? data.gcpServiceAccountKey : null,
+            data.provider === 'azure' ? data.azureTenantId : null,
+            data.provider === 'azure' ? data.azureClientId : null,
+            data.provider === 'azure' ? data.azureClientSecret : null,
+            data.provider === 'azure' ? data.azureSubscriptionId : null,
+            data.provider === 'azure' ? data.azureResourceGroup : null
+        ];
+
+        await client.query(insertQuery, values);
+        await client.query('COMMIT');
+
+
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error creating cluster:', error);
+        return {
+            message: 'Database Error: Failed to create cluster.',
+        };
+    } finally {
+        client.release();
+    }
+    revalidatePath('/dashboard/clusters');
+    redirect('/dashboard/clusters');
 }

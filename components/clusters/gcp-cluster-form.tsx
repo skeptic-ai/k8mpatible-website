@@ -1,40 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useActionState, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { ClusterState, createCluster, createClusterGCP, State } from '@/lib/actions'
+import { useFormState } from 'react-dom'
+import { Alert, AlertDescription } from '../ui/alert'
+import { AlertCircle } from 'lucide-react'
 
-interface GCPClusterFormProps {
-    onSubmit: (formData: any) => Promise<void>
-    isLoading: boolean
-}
 
-export function GCPClusterForm({ onSubmit, isLoading }: GCPClusterFormProps) {
-    const [formData, setFormData] = useState({
-        name: '', // Display name for the cluster connection
-        location: '', // GCP region or zone where the cluster is located
-        serviceAccountKey: '', // JSON key file contents
-    })
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        onSubmit(formData)
-    }
-
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-        const { name, value } = e.target
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }))
-    }
+export function GCPClusterForm() {
+    const initialState: ClusterState = { message: null, errors: {} };
+    const [state, formAction] = useActionState(createClusterGCP, initialState)
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form action={formAction} className="space-y-6">
             <div className="space-y-2">
                 <Label htmlFor="name">Connection Name</Label>
                 <Input
@@ -42,9 +25,16 @@ export function GCPClusterForm({ onSubmit, isLoading }: GCPClusterFormProps) {
                     name="name"
                     required
                     placeholder="e.g., prod-gke-cluster"
-                    value={formData.name}
-                    onChange={handleChange}
+
                 />
+                {state.errors?.name && (
+                    <Alert variant="destructive" className="mt-2">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>
+                            {state.errors.name.join(', ')}
+                        </AlertDescription>
+                    </Alert>
+                )}
                 <p className="text-sm text-gray-500">
                     A display name to identify this cluster connection
                 </p>
@@ -57,8 +47,7 @@ export function GCPClusterForm({ onSubmit, isLoading }: GCPClusterFormProps) {
                     name="location"
                     required
                     placeholder="e.g., us-central1 or us-central1-a"
-                    value={formData.location}
-                    onChange={handleChange}
+
                 />
                 <p className="text-sm text-gray-500">
                     The GCP region or zone where your cluster is located
@@ -66,14 +55,13 @@ export function GCPClusterForm({ onSubmit, isLoading }: GCPClusterFormProps) {
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="serviceAccountKey">Service Account Key</Label>
+                <Label htmlFor="gcpServiceAccountKey">Service Account Key</Label>
                 <Textarea
-                    id="serviceAccountKey"
-                    name="serviceAccountKey"
+                    id="gcpServiceAccountKey"
+                    name="gcpServiceAccountKey"
                     required
                     placeholder="Paste your service account JSON key here"
-                    value={formData.serviceAccountKey}
-                    onChange={handleChange}
+
                     rows={8}
                     className="font-mono text-sm"
                 />
@@ -83,8 +71,8 @@ export function GCPClusterForm({ onSubmit, isLoading }: GCPClusterFormProps) {
             </div>
 
             <div className="pt-4">
-                <Button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Connecting...' : 'Connect Cluster'}
+                <Button type="submit" >
+                    Add Cluster
                 </Button>
             </div>
         </form>

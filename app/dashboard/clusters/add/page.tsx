@@ -8,38 +8,26 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 
 // Import cloud-specific form components
-import { AWSClusterForm } from '@/components/clusters/aws-cluster-form'
+// import { AWSClusterForm } from '@/components/clusters/aws-cluster-form'
 import { GCPClusterForm } from '@/components/clusters/gcp-cluster-form'
-import { AzureClusterForm } from '@/components/clusters/azure-cluster-form'
+// import { AzureClusterForm } from '@/components/clusters/azure-cluster-form'
 
 type CloudProvider = 'aws' | 'gcp' | 'azure'
 
 export default function AddClusterPage() {
     const router = useRouter()
-    const [isLoading, setIsLoading] = useState(false)
     const [selectedProvider, setSelectedProvider] = useState<CloudProvider | ''>('')
 
-    const handleSubmit = async (formData: any) => {
-        setIsLoading(true)
-        try {
-            // API call to store credentials and cluster info
-            router.push('/dashboard/clusters')
-            router.refresh()
-        } catch (error) {
-            console.error('Error adding cluster:', error)
-        } finally {
-            setIsLoading(false)
-        }
-    }
+
 
     const renderProviderForm = () => {
         switch (selectedProvider) {
-            case 'aws':
-                return <AWSClusterForm onSubmit={handleSubmit} isLoading={isLoading} />
+            // case 'aws':
+            //     return <AWSClusterForm />
             case 'gcp':
-                return <GCPClusterForm onSubmit={handleSubmit} isLoading={isLoading} />
-            case 'azure':
-                return <AzureClusterForm onSubmit={handleSubmit} isLoading={isLoading} />
+                return <GCPClusterForm />
+            // case 'azure':
+            //     return <AzureClusterForm />
             default:
                 return null
         }
