@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { Pool } from 'pg'
+import { transferableAbortController } from 'util';
 import { z } from 'zod'
 
 const pool = new Pool()
@@ -125,6 +126,7 @@ export type ClusterState = {
     message?: string | null;
 };
 
+
 export async function createClusterGCP(prevState: ClusterState, formData: FormData) {
     return createCluster(prevState, formData, "gcp")
 }
@@ -234,6 +236,17 @@ export async function createCluster(
 }
 
 
+type Tool = {
+    Name: string;
+    Version: string;
+    CurrentIncompatibility: Incompatibility[];
+    UpgradeIncopatibility: Incompatibility[];
+}
+type Incompatibility = {
+    message: string;
+    toolName: string;
+}
+
 export async function getClusters() {
     const client = await pool.connect()
     const session = await auth()
@@ -269,10 +282,54 @@ export async function getClusters() {
             WHERE customer_id = $1
         `, [customerId])
 
+
         return clustersResult.rows
+
 
     } catch (error) {
         console.error('Error fetching clusters:', error)
+        return []
+    } finally {
+        client.release()
+    }
+}
+export async function getClusterStatus(clusterId: number) {
+    const scans = await getLatestClusterScans(clusterId, 1)
+    const tools = scans[0]?.discovered_tools.tools || []
+    if (tools.length === 0) {
+        return 'Unknown'
+    }
+    for (const tool of tools) {
+        if (tool.CurrentIncompatibility == undefined || tool.UpgradeIncopatibility == undefined) {
+            return 'Compatible'
+        }
+        if (tool.CurrentIncompatibility.length > 0 || tool.UpgradeIncopatibility.length > 0) {
+            return 'Incompatible'
+        }
+    }
+    return 'Compatible'
+}
+
+export async function getLatestClusterScans(clusterId: number, limit = 1) {
+    const client = await pool.connect()
+
+    try {
+        // Get scans for the specified cluster
+        const scansResult = await client.query(`
+            SELECT 
+                id,
+                scanned_at,
+                discovered_tools
+            FROM scans
+            WHERE cluster_id = $1
+            ORDER BY scanned_at DESC
+            LIMIT $2
+        `, [clusterId, limit])
+
+        return scansResult.rows
+
+    } catch (error) {
+        console.error('Error fetching cluster scans:', error)
         return []
     } finally {
         client.release()

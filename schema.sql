@@ -118,3 +118,20 @@ CREATE TRIGGER update_clusters_updated_at
     BEFORE UPDATE ON clusters
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+    
+-- Table to store cluster scan results
+CREATE TABLE scans (
+    id SERIAL,
+    cluster_id INTEGER NOT NULL,
+    scanned_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    discovered_tools JSONB NOT NULL, -- Stores the array of discovered tools and their versions
+    
+    PRIMARY KEY (id),
+    FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE
+);
+
+-- Index for faster lookups by cluster
+CREATE INDEX idx_scans_cluster_id ON scans(cluster_id);
+
+-- Index on the JSONB column for better query performance
+CREATE INDEX idx_scans_discovered_tools ON scans USING gin (discovered_tools);

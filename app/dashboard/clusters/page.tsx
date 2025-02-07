@@ -1,10 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import Link from 'next/link'
-import { getClusters } from '@/lib/actions'
+import { getClusters, getClusterStatus } from '@/lib/actions'
 import { formatDistanceToNow } from 'date-fns'
 
 export default async function ClustersPage() {
     const clusters = await getClusters()
+    const clusterStatus = await Promise.all(clusters.map(async cluster => await getClusterStatus(cluster.id)))
+    console.log(clusterStatus)
 
     return (
         <div className="space-y-6">
@@ -29,16 +31,16 @@ export default async function ClustersPage() {
                 </Card>
             ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {clusters.map((cluster) => (
+                    {clusters.map((cluster, index) => (
                         <Card key={cluster.id}>
                             <CardHeader>
                                 <CardTitle className="flex items-center justify-between">
                                     <span>{cluster.name}</span>
-                                    <span className={`text-sm px-2 py-1 rounded ${cluster.status === 'HEALTHY' ? 'bg-green-100 text-green-700' :
-                                            cluster.status === 'DEGRADED' ? 'bg-yellow-100 text-yellow-700' :
-                                                'bg-gray-100 text-gray-700'
+                                    <span className={`text-sm px-2 py-1 rounded ${clusterStatus[index] === 'Compatible' ? 'bg-green-100 text-green-700' :
+                                        clusterStatus[index] === 'Incompatible' ? 'bg-yellow-100 text-yellow-700' :
+                                            'bg-gray-100 text-gray-700'
                                         }`}>
-                                        {cluster.status || 'Unknown'}
+                                        {clusterStatus[index] || 'Unknown'}
                                     </span>
                                 </CardTitle>
                                 <CardDescription>
