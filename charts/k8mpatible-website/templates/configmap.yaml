@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ include "k8mpatible-website.fullname" . }}-config"
+data:
+  PGHOST: k8mpatible-postgres-postgresql
+  PGPORT: "5432"
+  PGDATABASE: k8mpatible
+  PGUSER: k8mpatible
+  DATABASE_HOST: k8mpatible-postgres-postgresql
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: k8mpatible
+  DATABASE_USER: k8mpatible
+  AUTH_TRUST_HOST: "true"
+  NEXTAUTH_URL: "https://k8mpatible.com"
