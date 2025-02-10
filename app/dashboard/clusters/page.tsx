@@ -25,7 +25,7 @@ export default async function ClustersPage() {
                     <CardContent className="py-8">
                         <div className="text-center text-gray-500">
                             <p>No clusters found.</p>
-                            <p className="mt-1">Click "Add Cluster" to create your first cluster.</p>
+                            <p className="mt-1">Click &quot;Add Cluster&quot; to create your first cluster.</p>
                         </div>
                     </CardContent>
                 </Card>

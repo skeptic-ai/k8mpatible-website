@@ -3,7 +3,6 @@ import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { Pool } from 'pg'
-import { transferableAbortController } from 'util';
 import { z } from 'zod'
 
 const pool = new Pool()
@@ -236,16 +235,16 @@ export async function createCluster(
 }
 
 
-type Tool = {
-    Name: string;
-    Version: string;
-    CurrentIncompatibility: Incompatibility[];
-    UpgradeIncopatibility: Incompatibility[];
-}
-type Incompatibility = {
-    message: string;
-    toolName: string;
-}
+// type Tool = {
+//     Name: string;
+//     Version: string;
+//     CurrentIncompatibility: Incompatibility[];
+//     UpgradeIncopatibility: Incompatibility[];
+// }
+// type Incompatibility = {
+//     message: string;
+//     toolName: string;
+// }
 
 export async function getClusters() {
     const client = await pool.connect()
