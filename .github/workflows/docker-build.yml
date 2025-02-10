@@ -9,7 +9,7 @@ on:
 env:
   REGISTRY: us-central1-docker.pkg.dev
   PROJECT_ID: production-9bb4
-  IMAGE_NAME: k8mpatible/k8mpatible
+  IMAGE_NAME: k8mpatible/website
 
 jobs:
   build-and-push:
