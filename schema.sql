@@ -135,3 +135,13 @@ CREATE INDEX idx_scans_cluster_id ON scans(cluster_id);
 
 -- Index on the JSONB column for better query performance
 CREATE INDEX idx_scans_discovered_tools ON scans USING gin (discovered_tools);
+-- Grant permissions on the clusters table and its sequence
+GRANT USAGE, SELECT ON SEQUENCE clusters_id_seq TO k8mpatible;
+GRANT ALL PRIVILEGES ON TABLE clusters TO k8mpatible;
+
+-- Grant permissions on the customers table since clusters references it
+GRANT ALL PRIVILEGES ON TABLE customers TO k8mpatible;
+
+-- Grant permissions on the scans table and its sequence since it's related to clusters
+GRANT USAGE, SELECT ON SEQUENCE scans_id_seq TO k8mpatible;
+GRANT ALL PRIVILEGES ON TABLE scans TO k8mpatible;
