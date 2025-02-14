@@ -235,16 +235,16 @@ export async function createCluster(
 }
 
 
-// type Tool = {
-//     Name: string;
-//     Version: string;
-//     CurrentIncompatibility: Incompatibility[];
-//     UpgradeIncopatibility: Incompatibility[];
-// }
-// type Incompatibility = {
-//     message: string;
-//     toolName: string;
-// }
+export type Tool = {
+    Name: string;
+    Version: string;
+    CurrentIncompatibility: Incompatibility[];
+    UpgradeIncompatibility: Incompatibility[];
+}
+export type Incompatibility = {
+    message: string;
+    toolName: string;
+}
 
 export async function getClusters() {
     const client = await pool.connect()
@@ -294,19 +294,65 @@ export async function getClusters() {
 }
 export async function getClusterStatus(clusterId: number) {
     const scans = await getLatestClusterScans(clusterId, 1)
-    const tools = scans[0]?.discovered_tools.tools || []
+    const tools = scans[0]?.discovered_tools.tools as Tool[]
     if (tools.length === 0) {
         return 'Unknown'
     }
     for (const tool of tools) {
-        if (tool.CurrentIncompatibility == undefined || tool.UpgradeIncopatibility == undefined) {
+        console.log(tool)
+        if (tool.CurrentIncompatibility == undefined || tool.UpgradeIncompatibility == undefined) {
             return 'Compatible'
         }
-        if (tool.CurrentIncompatibility.length > 0 || tool.UpgradeIncopatibility.length > 0) {
+        if (tool.CurrentIncompatibility.length > 0 || tool.UpgradeIncompatibility.length > 0) {
             return 'Incompatible'
         }
     }
     return 'Compatible'
+}
+
+export async function getClusterById(clusterId: number) {
+    const client = await pool.connect()
+    const session = await auth()
+    const email = session?.user?.email || ""
+
+    try {
+        // Get customer ID from email
+        const customerResult = await client.query(
+            'SELECT id FROM customers WHERE email = $1',
+            [email]
+        )
+
+        if (customerResult.rows.length === 0) {
+            return null
+        }
+
+        const customerId = customerResult.rows[0].id
+
+        // Get cluster with provider-specific fields
+        const clusterResult = await client.query(`
+            SELECT 
+                id,
+                name,
+                provider,
+                location,
+                created_at,
+                aws_access_key_id,
+                gcp_service_account_key,
+                azure_tenant_id,
+                azure_subscription_id,
+                azure_resource_group
+            FROM clusters
+            WHERE id = $1 AND customer_id = $2
+        `, [clusterId, customerId])
+
+        return clusterResult.rows[0] || null
+
+    } catch (error) {
+        console.error('Error fetching cluster:', error)
+        return null
+    } finally {
+        client.release()
+    }
 }
 
 export async function getLatestClusterScans(clusterId: number, limit = 1) {

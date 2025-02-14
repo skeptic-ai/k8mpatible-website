@@ -57,6 +57,14 @@ export default async function ClustersPage() {
                                         <span className="text-gray-500">Location</span>
                                         <span>{cluster.location}</span>
                                     </div>
+                                    <div className="mt-4">
+                                        <Link
+                                            href={`/dashboard/clusters/${cluster.id}/scans`}
+                                            className="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                                        >
+                                            View Scans
+                                        </Link>
+                                    </div>
 
                                     {/* Provider-specific fields */}
                                     {cluster.provider === 'aws' && cluster.aws_access_key_id && (
