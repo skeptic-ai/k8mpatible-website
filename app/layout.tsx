@@ -36,15 +36,14 @@ export default async function RootLayout({
                       <span className="text-sm text-gray-600">
                         {session.user?.email}
                       </span>
+                      <Link href="/dashboard">
+                        <Button size="default" variant="default" className="bg-blue-600 hover:bg-blue-700">
+                          Dashboard
+                        </Button>
+                      </Link>
                       <Link href="/api/auth/signout">
                         <Button variant="outline" size="sm">
                           Sign out
-                        </Button>
-                      </Link>
-                      <Link href="/dashboard">
-                        <Button size="icon" variant="ghost">
-                          <UserCircle className="h-5 w-5" />
-                          <span className="sr-only">Dashboard</span>
                         </Button>
                       </Link>
                     </div>
@@ -75,7 +74,7 @@ export default async function RootLayout({
           {/* Footer */}
           <footer className="border-t bg-white">
             <div className="container mx-auto px-4 py-6 text-center text-sm text-gray-600">
-              © {new Date().getFullYear()} k8mpatible. All rights reserved.
+              © {new Date().getFullYear()} Skeptic AI LLC. All rights reserved.
             </div>
           </footer>
         </div>
