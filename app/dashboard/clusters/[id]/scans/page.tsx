@@ -9,12 +9,11 @@ export default async function ClusterScansPage({
 }: {
     params: { id: string }
 }) {
-    const cluster = await getClusterById(parseInt(params.id))
-    const scans = await getLatestClusterScans(parseInt(params.id), 10) // Get last 10 scans
-    scans.forEach(scan => {
+    const { id } = await params
+    const cluster = await getClusterById(parseInt(id))
+    const scans = await getLatestClusterScans(parseInt(id), 10) // Get last 10 scans
 
-        console.log("from scans page", scan.discovered_tools.tools[0])
-    })
+
     if (!cluster) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen">
@@ -55,34 +54,34 @@ export default async function ClusterScansPage({
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                    {scan.discovered_tools.tools?.map((tool: Tool, index: number) => (
+                                    {scan.discovered_tools.tools?.filter(tool => tool.name !== "Kubernetes").map((tool: Tool, index: number) => (
                                         <div key={index} className="border rounded-lg p-4">
                                             <div className="flex justify-between mb-2">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="font-medium">{tool.Name}</span>
-                                                    {tool.CurrentIncompatibility?.length === 0 && (
+                                                    <span className="font-medium">{tool.name}</span>
+                                                    {tool.current_incompatibility?.length === 0 && (
                                                         <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">
-                                                            Supported
+                                                            Supported for Current Version
                                                         </span>
                                                     )}
-                                                    {tool.UpgradeIncompatibility?.length === 0 && (
+                                                    {tool.upgrade_incompatibility?.length === 0 && (
                                                         <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">
-                                                            Safe to Upgrade
+                                                            Supported for Next Version
                                                         </span>
                                                     )}
                                                 </div>
-                                                <span className="text-sm text-gray-500">v{tool.Version}</span>
+                                                <span className="text-sm text-gray-500">v{tool.version}</span>
                                             </div>
-                                            {(tool.CurrentIncompatibility?.length > 0 || tool.UpgradeIncompatibility?.length > 0) && (
+                                            {(tool.current_incompatibility?.length > 0 || tool.upgrade_incompatibility?.length > 0) && (
                                                 <div className="mt-2 space-y-2">
-                                                    {tool.CurrentIncompatibility?.map((incompatibility: Incompatibility, i: number) => (
+                                                    {tool.current_incompatibility?.map((incompatibility: Incompatibility, i: number) => (
                                                         <div key={i} className="text-sm text-red-600 bg-red-50 p-2 rounded">
                                                             {incompatibility.message}
                                                         </div>
                                                     ))}
-                                                    {tool.UpgradeIncompatibility?.map((incompatibility: Incompatibility, i: number) => (
+                                                    {tool.upgrade_incompatibility?.map((incompatibility: Incompatibility, i: number) => (
                                                         <div key={i} className="text-sm text-yellow-600 bg-yellow-50 p-2 rounded">
-                                                            {incompatibility.message}
+                                                            Upgrade Required. Not compatible with the next version of kubernetes, This version {incompatibility.message}
                                                         </div>
                                                     ))}
                                                 </div>

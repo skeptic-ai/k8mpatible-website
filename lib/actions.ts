@@ -236,14 +236,14 @@ export async function createCluster(
 
 
 export type Tool = {
-    Name: string;
-    Version: string;
-    CurrentIncompatibility: Incompatibility[];
-    UpgradeIncompatibility: Incompatibility[];
+    name: string;
+    version: string;
+    current_incompatibility: Incompatibility[];
+    upgrade_incompatibility: Incompatibility[];
 }
 export type Incompatibility = {
     message: string;
-    toolName: string;
+    tool_name: string;
 }
 
 export type Scan = {
@@ -309,10 +309,10 @@ export async function getClusterStatus(clusterId: number) {
     }
     for (const tool of tools) {
         console.log(tool)
-        if (tool.CurrentIncompatibility == undefined || tool.UpgradeIncompatibility == undefined) {
+        if (tool.current_incompatibility == undefined || tool.upgrade_incompatibility == undefined) {
             return 'Compatible'
         }
-        if (tool.CurrentIncompatibility.length > 0 || tool.UpgradeIncompatibility.length > 0) {
+        if (tool.current_incompatibility.length > 0 || tool.upgrade_incompatibility.length > 0) {
             return 'Incompatible'
         }
     }
