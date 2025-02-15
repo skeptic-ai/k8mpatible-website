@@ -18,7 +18,7 @@ export function GCPClusterForm() {
     return (
         <form action={formAction} className="space-y-6">
             <div className="space-y-2">
-                <Label htmlFor="name">Connection Name</Label>
+                <Label htmlFor="name">Cluster Name</Label>
                 <Input
                     id="name"
                     name="name"
@@ -35,7 +35,7 @@ export function GCPClusterForm() {
                     </Alert>
                 )}
                 <p className="text-sm text-gray-500">
-                    A display name to identify this cluster connection
+                    This must match the name of the cluster in GCP
                 </p>
             </div>
 
