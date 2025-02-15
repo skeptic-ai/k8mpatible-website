@@ -11,7 +11,10 @@ export default async function ClusterScansPage({
 }) {
     const cluster = await getClusterById(parseInt(params.id))
     const scans = await getLatestClusterScans(parseInt(params.id), 10) // Get last 10 scans
+    scans.forEach(scan => {
 
+        console.log("from scans page", scan.discovered_tools.tools[0])
+    })
     if (!cluster) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen">
@@ -55,7 +58,19 @@ export default async function ClusterScansPage({
                                     {scan.discovered_tools.tools?.map((tool: Tool, index: number) => (
                                         <div key={index} className="border rounded-lg p-4">
                                             <div className="flex justify-between mb-2">
-                                                <span className="font-medium">{tool.Name}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-medium">{tool.Name}</span>
+                                                    {tool.CurrentIncompatibility?.length === 0 && (
+                                                        <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">
+                                                            Supported
+                                                        </span>
+                                                    )}
+                                                    {tool.UpgradeIncompatibility?.length === 0 && (
+                                                        <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">
+                                                            Safe to Upgrade
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <span className="text-sm text-gray-500">v{tool.Version}</span>
                                             </div>
                                             {(tool.CurrentIncompatibility?.length > 0 || tool.UpgradeIncompatibility?.length > 0) && (

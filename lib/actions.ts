@@ -246,6 +246,15 @@ export type Incompatibility = {
     toolName: string;
 }
 
+export type Scan = {
+    id: number;
+    scanned_at: string;
+    discovered_tools: {
+        tools: Tool[];
+    };
+}
+
+
 export async function getClusters() {
     const client = await pool.connect()
     const session = await auth()
@@ -370,8 +379,8 @@ export async function getLatestClusterScans(clusterId: number, limit = 1) {
             ORDER BY scanned_at DESC
             LIMIT $2
         `, [clusterId, limit])
-
-        return scansResult.rows
+        const scans = scansResult.rows as Scan[]
+        return scans
 
     } catch (error) {
         console.error('Error fetching cluster scans:', error)
