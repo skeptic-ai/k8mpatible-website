@@ -2,8 +2,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { auth } from '@/auth'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { UserCircle } from 'lucide-react'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,7 +24,14 @@ export default async function RootLayout({
               <div className="flex h-16 items-center justify-between">
                 {/* Brand */}
                 <div className="flex items-center">
-                  <Link href="/" className="flex items-center">
+                  <Link href="/" className="flex items-center gap-2">
+                    <Image
+                      src="/apple-icon-72x72.png"
+                      alt="k8mpatible logo"
+                      width={36}
+                      height={36}
+                      className="rounded-md"
+                    />
                     <span className="text-2xl font-bold text-blue-600">k8mpatible</span>
                   </Link>
                 </div>
