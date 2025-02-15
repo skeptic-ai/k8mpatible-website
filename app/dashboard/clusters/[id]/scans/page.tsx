@@ -3,13 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
-
-export default async function ClusterScansPage({
-    params,
-}: {
-    params: { id: string }
-}) {
-    const { id } = await params
+type tParams = Promise<{ id: string }>
+export default async function ClusterScansPage(props: { params: tParams }) {
+    const { id } = await props.params
     const cluster = await getClusterById(parseInt(id))
     const scans = await getLatestClusterScans(parseInt(id), 10) // Get last 10 scans
 
