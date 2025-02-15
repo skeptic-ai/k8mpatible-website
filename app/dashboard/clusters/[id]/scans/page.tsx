@@ -7,7 +7,7 @@ type tParams = Promise<{ id: string }>
 export default async function ClusterScansPage(props: { params: tParams }) {
     const { id } = await props.params
     const cluster = await getClusterById(parseInt(id))
-    const scans = await getLatestClusterScans(parseInt(id), 10) // Get last 10 scans
+    const scans = await getLatestClusterScans(parseInt(id)) // Get last 10 scans
 
 
     if (!cluster) {
