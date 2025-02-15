@@ -27,7 +27,43 @@ export async function IsEmailEnrolled(email: string) {
     if (res.rowCount)
         return res.rowCount > 0
     return false
+}
 
+export async function isAdminEmail(email: string) {
+    return email === 'jbrandli@k8mpatible.com';
+}
+
+export async function getAllCustomers() {
+    const session = await auth();
+    const email = session?.user?.email;
+
+    if (!email || !await isAdminEmail(email)) {
+        return [];
+    }
+
+    const client = await pool.connect();
+    try {
+        const result = await client.query(`
+            SELECT 
+                c.id,
+                c.name,
+                c.organization,
+                c.email,
+                COUNT(DISTINCT cl.id) as cluster_count,
+                COUNT(DISTINCT s.id) as scan_count
+            FROM customers c
+            LEFT JOIN clusters cl ON c.id = cl.customer_id
+            LEFT JOIN scans s ON cl.id = s.cluster_id
+            GROUP BY c.id, c.name, c.organization, c.email
+            ORDER BY c.name ASC
+        `);
+        return result.rows;
+    } catch (error) {
+        console.error('Error fetching customers:', error);
+        return [];
+    } finally {
+        client.release();
+    }
 }
 
 export async function EnrollCustomer(prevState: State, formData: FormData) {
