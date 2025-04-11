@@ -68,6 +68,7 @@ CREATE TABLE clusters (
     -- AWS specific fields
     aws_access_key_id VARCHAR(255),
     aws_secret_access_key TEXT,
+    aws_role_arn TEXT,
     
     -- GCP specific fields
     gcp_service_account_key TEXT,
@@ -85,7 +86,8 @@ CREATE TABLE clusters (
     -- Ensure credentials are provided based on provider
     CONSTRAINT valid_aws_credentials CHECK (
         provider != 'aws' OR 
-        (aws_access_key_id IS NOT NULL AND aws_secret_access_key IS NOT NULL)
+        (aws_access_key_id IS NOT NULL AND aws_secret_access_key IS NOT NULL) OR
+        (aws_role_arn IS NOT NULL)
     ),
     CONSTRAINT valid_gcp_credentials CHECK (
         provider != 'gcp' OR 

@@ -1,17 +1,20 @@
 'use client'
 
 import { useActionState } from 'react'
+import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { ClusterState, createCluster } from '@/lib/actions'
+import { ClusterState, createClusterAWS } from '@/lib/actions'
 import { Alert, AlertDescription } from '../ui/alert'
 import { AlertCircle } from 'lucide-react'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 export function AWSClusterForm() {
     const initialState: ClusterState = { message: null, errors: {} };
-    const [state, formAction] = useActionState((prevState: ClusterState, formData: FormData) =>
-        createCluster(prevState, formData, "aws"), initialState)
+    const [state, formAction] = useActionState(createClusterAWS, initialState);
+
+    const [authMethod, setAuthMethod] = useState("role") // Default to role (recommended)
 
     return (
         <form action={formAction} className="space-y-6">
@@ -49,35 +52,79 @@ export function AWSClusterForm() {
                 </p>
             </div>
 
-            <div className="space-y-2">
-                <Label htmlFor="awsAccessKeyId">AWS Access Key</Label>
-                <Input
-                    id="awsAccessKeyId"
-                    name="awsAccessKeyId"
-                    type="password"
-                    required
-                    placeholder="Your AWS access key"
-                    className="font-mono"
-                />
+            <div className="space-y-4">
+                <Label>Authentication Method</Label>
+                <RadioGroup
+                    defaultValue={authMethod}
+                    onValueChange={setAuthMethod}
+                    className="flex flex-col space-y-2"
+                    name="authMethod"
+                >
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="role" id="role" />
+                        <Label htmlFor="role" className="font-normal cursor-pointer">
+                            AWS Role (Recommended)
+                        </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="keys" id="keys" />
+                        <Label htmlFor="keys" className="font-normal cursor-pointer">
+                            AWS Access Keys
+                        </Label>
+                    </div>
+                </RadioGroup>
                 <p className="text-sm text-gray-500">
-                    AWS access key for an IAM user with the EKSViewOnly policy for all namespaces
+                    Using AWS IAM roles is the recommended approach for better security
                 </p>
             </div>
 
-            <div className="space-y-2">
-                <Label htmlFor="awsSecretAccessKey">AWS Secret Key</Label>
-                <Input
-                    id="awsSecretAccessKey"
-                    name="awsSecretAccessKey"
-                    type="password"
-                    required
-                    placeholder="Your AWS secret key"
-                    className="font-mono"
-                />
-                <p className="text-sm text-gray-500">
-                    AWS secret key associated with your access key
-                </p>
-            </div>
+            {authMethod === "role" ? (
+                <div className="space-y-2">
+                    <Label htmlFor="awsRoleArn">AWS Role ARN</Label>
+                    <Input
+                        id="awsRoleArn"
+                        name="awsRoleArn"
+                        required
+                        placeholder="arn:aws:iam::123456789012:role/eks-access-role"
+                        className="font-mono"
+                    />
+                    <p className="text-sm text-gray-500">
+                        The ARN of an IAM role with permissions to access your EKS cluster
+                    </p>
+                </div>
+            ) : (
+                <>
+                    <div className="space-y-2">
+                        <Label htmlFor="awsAccessKeyId">AWS Access Key</Label>
+                        <Input
+                            id="awsAccessKeyId"
+                            name="awsAccessKeyId"
+                            type="password"
+                            required={authMethod === "keys"}
+                            placeholder="Your AWS access key"
+                            className="font-mono"
+                        />
+                        <p className="text-sm text-gray-500">
+                            AWS access key for an IAM user with the EKSViewOnly policy for all namespaces
+                        </p>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="awsSecretAccessKey">AWS Secret Key</Label>
+                        <Input
+                            id="awsSecretAccessKey"
+                            name="awsSecretAccessKey"
+                            type="password"
+                            required={authMethod === "keys"}
+                            placeholder="Your AWS secret key"
+                            className="font-mono"
+                        />
+                        <p className="text-sm text-gray-500">
+                            AWS secret key associated with your access key
+                        </p>
+                    </div>
+                </>
+            )}
 
             <div className="pt-4">
                 <Button type="submit">

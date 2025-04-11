@@ -111,9 +111,35 @@ const BaseClusterSchema = z.object({
 
 const AWSClusterSchema = BaseClusterSchema.extend({
     provider: z.literal("aws"),
-    awsAccessKeyId: z.string().min(1, "AWS Access Key ID is required"),
-    awsSecretAccessKey: z.string().min(1, "AWS Secret Access Key is required"),
+    authMethod: z.enum(["keys", "role"]),
+    awsAccessKeyId: z.string().optional(),
+    awsSecretAccessKey: z.string().optional(),
+    awsRoleArn: z.string().optional(),
 });
+
+// Custom validator function for AWS credentials
+const validateAWSCredentials = (data: any) => {
+    if (data.provider !== "aws") return true;
+
+    if (data.authMethod === "keys") {
+        if (!data.awsAccessKeyId) {
+            throw new Error("AWS Access Key ID is required when using key authentication");
+        }
+        if (!data.awsSecretAccessKey) {
+            throw new Error("AWS Secret Access Key is required when using key authentication");
+        }
+        return true;
+    }
+
+    if (data.authMethod === "role") {
+        if (!data.awsRoleArn) {
+            throw new Error("AWS Role ARN is required when using role authentication");
+        }
+        return true;
+    }
+
+    return false;
+};
 
 const GCPClusterSchema = BaseClusterSchema.extend({
     provider: z.literal("gcp"),
@@ -149,8 +175,10 @@ export type ClusterState = {
         name?: string[];
         provider?: string[];
         location?: string[];
+        authMethod?: string[];
         awsAccessKeyId?: string[];
         awsSecretAccessKey?: string[];
+        awsRoleArn?: string[];
         gcpServiceAccountKey?: string[];
         azureTenantId?: string[];
         azureClientId?: string[];
@@ -165,6 +193,10 @@ export type ClusterState = {
 export async function createClusterGCP(prevState: ClusterState, formData: FormData) {
     return createCluster(prevState, formData, "gcp")
 }
+
+export async function createClusterAWS(prevState: ClusterState, formData: FormData) {
+    return createCluster(prevState, formData, "aws")
+}
 export async function createCluster(
     prevState: ClusterState,
     formData: FormData,
@@ -176,13 +208,15 @@ export async function createCluster(
     console.log("creating cluster for user", email)
     try {
         // First, validate all the form data
-        const validatedData = CreateClusterSchema.safeParse({
+        const formValues = {
             name: formData.get('name'),
             provider: provider,
             location: formData.get('location'),
             // AWS fields
+            authMethod: formData.get('authMethod'),
             awsAccessKeyId: formData.get('awsAccessKeyId'),
             awsSecretAccessKey: formData.get('awsSecretAccessKey'),
+            awsRoleArn: formData.get('awsRoleArn'),
             // GCP fields
             gcpServiceAccountKey: formData.get('gcpServiceAccountKey'),
             // Azure fields
@@ -191,7 +225,23 @@ export async function createCluster(
             azureClientSecret: formData.get('azureClientSecret'),
             azureSubscriptionId: formData.get('azureSubscriptionId'),
             azureResourceGroup: formData.get('azureResourceGroup'),
-        });
+        };
+
+        const validatedData = CreateClusterSchema.safeParse(formValues);
+
+        // Additional validation for AWS credentials
+        if (validatedData.success && provider === "aws") {
+            try {
+                validateAWSCredentials(validatedData.data);
+            } catch (error) {
+                return {
+                    errors: {
+                        authMethod: [(error as Error).message]
+                    },
+                    message: 'Missing or invalid fields. Failed to create cluster.',
+                };
+            }
+        }
 
         if (!validatedData.success) {
             console.log("not validated", validatedData.error.flatten().fieldErrors)
@@ -228,13 +278,14 @@ export async function createCluster(
                 location,
                 aws_access_key_id,
                 aws_secret_access_key,
+                aws_role_arn,
                 gcp_service_account_key,
                 azure_tenant_id,
                 azure_client_id,
                 azure_client_secret,
                 azure_subscription_id,
                 azure_resource_group
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
             RETURNING id`;
 
         const values = [
@@ -242,8 +293,9 @@ export async function createCluster(
             data.name,
             data.provider,
             data.location,
-            data.provider === 'aws' ? data.awsAccessKeyId : null,
-            data.provider === 'aws' ? data.awsSecretAccessKey : null,
+            data.provider === 'aws' && data.authMethod === 'keys' ? data.awsAccessKeyId : null,
+            data.provider === 'aws' && data.authMethod === 'keys' ? data.awsSecretAccessKey : null,
+            data.provider === 'aws' && data.authMethod === 'role' ? data.awsRoleArn : null,
             data.provider === 'gcp' ? data.gcpServiceAccountKey : null,
             data.provider === 'azure' ? data.azureTenantId : null,
             data.provider === 'azure' ? data.azureClientId : null,
@@ -318,6 +370,7 @@ export async function getClusters() {
                 location,
                 created_at,
                 aws_access_key_id,
+                aws_role_arn,
                 gcp_service_account_key,
                 azure_tenant_id,
                 azure_subscription_id,
@@ -383,6 +436,7 @@ export async function getClusterById(clusterId: number) {
                 location,
                 created_at,
                 aws_access_key_id,
+                aws_role_arn,
                 gcp_service_account_key,
                 azure_tenant_id,
                 azure_subscription_id,
