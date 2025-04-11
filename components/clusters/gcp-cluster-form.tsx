@@ -5,15 +5,15 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { ClusterState, createClusterGCP } from '@/lib/actions'
+import { createClusterGCP } from '@/lib/actions'
 import { Alert, AlertDescription } from '../ui/alert'
 import { AlertCircle } from 'lucide-react'
 
 
 
 export function GCPClusterForm() {
-    const initialState: ClusterState = { message: null, errors: {} };
-    const [state, formAction] = useActionState(createClusterGCP, initialState)
+    const initialState = { message: '', errors: {} };
+    const [state, formAction] = useActionState(createClusterGCP, initialState);
 
     return (
         <form action={formAction} className="space-y-6">
