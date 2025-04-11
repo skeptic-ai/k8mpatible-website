@@ -1,101 +1,89 @@
-// 'use client'
+'use client'
 
-// import { useState } from 'react'
-// import { Input } from '@/components/ui/input'
-// import { Label } from '@/components/ui/label'
-// import { Button } from '@/components/ui/button'
+import { useActionState } from 'react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { ClusterState, createCluster } from '@/lib/actions'
+import { Alert, AlertDescription } from '../ui/alert'
+import { AlertCircle } from 'lucide-react'
 
+export function AWSClusterForm() {
+    const initialState: ClusterState = { message: null, errors: {} };
+    const [state, formAction] = useActionState((prevState: ClusterState, formData: FormData) =>
+        createCluster(prevState, formData, "aws"), initialState)
 
+    return (
+        <form action={formAction} className="space-y-6">
+            <div className="space-y-2">
+                <Label htmlFor="name">Cluster Name</Label>
+                <Input
+                    id="name"
+                    name="name"
+                    required
+                    placeholder="e.g., prod-eks-cluster"
+                />
+                {state.errors?.name && (
+                    <Alert variant="destructive" className="mt-2">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>
+                            {state.errors.name.join(', ')}
+                        </AlertDescription>
+                    </Alert>
+                )}
+                <p className="text-sm text-gray-500">
+                    This must match the name of your EKS cluster in AWS
+                </p>
+            </div>
 
-// export function AWSClusterForm() {
-//     const [formData, setFormData] = useState({
-//         name: '',
-//         region: '',
-//         accessKeyId: '',
-//         secretAccessKey: '',
-//     })
+            <div className="space-y-2">
+                <Label htmlFor="location">Cluster Region</Label>
+                <Input
+                    id="location"
+                    name="location"
+                    required
+                    placeholder="e.g., us-east-1"
+                />
+                <p className="text-sm text-gray-500">
+                    The AWS region where your EKS cluster is located
+                </p>
+            </div>
 
-//     const handleSubmit = (e: React.FormEvent) => {
-//         e.preventDefault()
-//         onSubmit(formData)
-//     }
+            <div className="space-y-2">
+                <Label htmlFor="awsAccessKeyId">AWS Access Key</Label>
+                <Input
+                    id="awsAccessKeyId"
+                    name="awsAccessKeyId"
+                    type="password"
+                    required
+                    placeholder="Your AWS access key"
+                    className="font-mono"
+                />
+                <p className="text-sm text-gray-500">
+                    AWS access key for an IAM user with the EKSViewOnly policy for all namespaces
+                </p>
+            </div>
 
-//     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//         const { name, value } = e.target
-//         setFormData(prev => ({
-//             ...prev,
-//             [name]: value
-//         }))
-//     }
+            <div className="space-y-2">
+                <Label htmlFor="awsSecretAccessKey">AWS Secret Key</Label>
+                <Input
+                    id="awsSecretAccessKey"
+                    name="awsSecretAccessKey"
+                    type="password"
+                    required
+                    placeholder="Your AWS secret key"
+                    className="font-mono"
+                />
+                <p className="text-sm text-gray-500">
+                    AWS secret key associated with your access key
+                </p>
+            </div>
 
-//     return (
-//         <form onSubmit={handleSubmit} className="space-y-6">
-//             <div className="space-y-2">
-//                 <Label htmlFor="name">Connection Name</Label>
-//                 <Input
-//                     id="name"
-//                     name="name"
-//                     required
-//                     placeholder="e.g., prod-eks-cluster"
-//                     value={formData.name}
-//                     onChange={handleChange}
-//                 />
-//                 <p className="text-sm text-gray-500">
-//                     A display name to identify this cluster connection
-//                 </p>
-//             </div>
-
-//             <div className="space-y-2">
-//                 <Label htmlFor="region">Cluster Region</Label>
-//                 <Input
-//                     id="region"
-//                     name="region"
-//                     required
-//                     placeholder="e.g., us-west-2"
-//                     value={formData.region}
-//                     onChange={handleChange}
-//                 />
-//                 <p className="text-sm text-gray-500">
-//                     The AWS region where your EKS cluster is located
-//                 </p>
-//             </div>
-
-//             <div className="space-y-2">
-//                 <Label htmlFor="accessKeyId">Access Key ID</Label>
-//                 <Input
-//                     id="accessKeyId"
-//                     name="accessKeyId"
-//                     required
-//                     placeholder="AKIA..."
-//                     value={formData.accessKeyId}
-//                     onChange={handleChange}
-//                 />
-//                 <p className="text-sm text-gray-500">
-//                     AWS Access Key ID with EKS read-only permissions
-//                 </p>
-//             </div>
-
-//             <div className="space-y-2">
-//                 <Label htmlFor="secretAccessKey">Secret Access Key</Label>
-//                 <Input
-//                     id="secretAccessKey"
-//                     name="secretAccessKey"
-//                     type="password"
-//                     required
-//                     placeholder="Your AWS secret access key"
-//                     value={formData.secretAccessKey}
-//                     onChange={handleChange}
-//                 />
-//                 <p className="text-sm text-gray-500">
-//                     AWS Secret Access Key associated with the Access Key ID
-//                 </p>
-//             </div>
-
-//             <div className="pt-4">
-//                 <Button type="submit" disabled={isLoading}>
-//                     {isLoading ? 'Connecting...' : 'Connect Cluster'}
-//                 </Button>
-//             </div>
-//         </form>
-//     )
-// }
+            <div className="pt-4">
+                <Button type="submit">
+                    Add Cluster
+                </Button>
+            </div>
+        </form>
+    )
+}

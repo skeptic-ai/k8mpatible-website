@@ -340,7 +340,8 @@ export async function getClusters() {
 export async function getClusterStatus(clusterId: number) {
     const scans = await getLatestClusterScans(clusterId, 1)
     const tools = scans[0]?.discovered_tools.tools as Tool[]
-    if (tools.length === 0) {
+
+    if (tools == undefined || tools.length === 0) {
         return 'Unknown'
     }
     for (const tool of tools) {

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 
 // Import cloud-specific form components
-// import { AWSClusterForm } from '@/components/clusters/aws-cluster-form'
+import { AWSClusterForm } from '@/components/clusters/aws-cluster-form'
 import { GCPClusterForm } from '@/components/clusters/gcp-cluster-form'
 // import { AzureClusterForm } from '@/components/clusters/azure-cluster-form'
 
@@ -22,8 +22,8 @@ export default function AddClusterPage() {
 
     const renderProviderForm = () => {
         switch (selectedProvider) {
-            // case 'aws':
-            //     return <AWSClusterForm />
+            case 'aws':
+                return <AWSClusterForm />
             case 'gcp':
                 return <GCPClusterForm />
             // case 'azure':
