@@ -116,7 +116,7 @@ const AWSClusterSchema = BaseClusterSchema.extend({
 });
 
 // Custom validator function for AWS credentials
-const validateAWSCredentials = (data: any) => {
+const validateAWSCredentials = (data: { provider: string; awsRoleArn?: string }) => {
     if (data.provider !== "aws") return true;
 
     if (!data.awsRoleArn) {

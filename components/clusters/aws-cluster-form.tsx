@@ -4,7 +4,7 @@ import { useActionState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { ClusterState, createClusterAWS } from '@/lib/actions'
+import { createClusterAWS } from '@/lib/actions'
 import { Alert, AlertDescription } from '../ui/alert'
 import { AlertCircle } from 'lucide-react'
 
