@@ -111,34 +111,19 @@ const BaseClusterSchema = z.object({
 
 const AWSClusterSchema = BaseClusterSchema.extend({
     provider: z.literal("aws"),
-    authMethod: z.enum(["keys", "role"]),
-    awsAccessKeyId: z.string().optional(),
-    awsSecretAccessKey: z.string().optional(),
-    awsRoleArn: z.string().optional(),
+    authMethod: z.literal("role"),
+    awsRoleArn: z.string().min(1, "AWS Role ARN is required"),
 });
 
 // Custom validator function for AWS credentials
 const validateAWSCredentials = (data: any) => {
     if (data.provider !== "aws") return true;
 
-    if (data.authMethod === "keys") {
-        if (!data.awsAccessKeyId) {
-            throw new Error("AWS Access Key ID is required when using key authentication");
-        }
-        if (!data.awsSecretAccessKey) {
-            throw new Error("AWS Secret Access Key is required when using key authentication");
-        }
-        return true;
+    if (!data.awsRoleArn) {
+        throw new Error("AWS Role ARN is required");
     }
 
-    if (data.authMethod === "role") {
-        if (!data.awsRoleArn) {
-            throw new Error("AWS Role ARN is required when using role authentication");
-        }
-        return true;
-    }
-
-    return false;
+    return true;
 };
 
 const GCPClusterSchema = BaseClusterSchema.extend({
@@ -293,9 +278,9 @@ export async function createCluster(
             data.name,
             data.provider,
             data.location,
-            data.provider === 'aws' && data.authMethod === 'keys' ? data.awsAccessKeyId : null,
-            data.provider === 'aws' && data.authMethod === 'keys' ? data.awsSecretAccessKey : null,
-            data.provider === 'aws' && data.authMethod === 'role' ? data.awsRoleArn : null,
+            null, // aws_access_key_id
+            null, // aws_secret_access_key
+            data.provider === 'aws' ? data.awsRoleArn : null,
             data.provider === 'gcp' ? data.gcpServiceAccountKey : null,
             data.provider === 'azure' ? data.azureTenantId : null,
             data.provider === 'azure' ? data.azureClientId : null,
