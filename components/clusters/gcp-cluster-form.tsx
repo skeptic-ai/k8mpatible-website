@@ -4,11 +4,10 @@ import { useActionState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { createClusterGCP } from '@/lib/actions'
 import { Alert, AlertDescription } from '../ui/alert'
-import { AlertCircle } from 'lucide-react'
-
+import { AlertCircle, Info } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 
 
 export function GCPClusterForm() {
@@ -46,7 +45,6 @@ export function GCPClusterForm() {
                     name="location"
                     required
                     placeholder="e.g., us-central1 or us-central1-a"
-
                 />
                 <p className="text-sm text-gray-500">
                     The GCP region or zone where your cluster is located
@@ -54,20 +52,55 @@ export function GCPClusterForm() {
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="gcpServiceAccountKey">Service Account Key</Label>
-                <Textarea
-                    id="gcpServiceAccountKey"
-                    name="gcpServiceAccountKey"
+                <Label htmlFor="gcpProjectId">GCP Project ID</Label>
+                <Input
+                    id="gcpProjectId"
+                    name="gcpProjectId"
                     required
-                    placeholder="Paste your service account JSON key here"
-
-                    rows={8}
-                    className="font-mono text-sm"
+                    placeholder="e.g., my-gcp-project-123"
                 />
                 <p className="text-sm text-gray-500">
-                    Service account key with Kubernetes Engine Cluster Viewer role (roles/container.clusterViewer)
+                    The ID of your GCP project where the cluster is located
                 </p>
             </div>
+
+            <Card className="mt-4">
+                <CardHeader>
+                    <CardTitle className="flex items-center">
+                        <Info className="h-5 w-5 mr-2" />
+                        Required GCP Permissions
+                    </CardTitle>
+                    <CardDescription>
+                        You need to grant the following permissions to our service account
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div>
+                        <h3 className="font-medium">Service Account</h3>
+                        <p className="font-mono text-sm mt-1">k8mpatible-client@production-9bb4.iam.gserviceaccount.com</p>
+                    </div>
+
+                    <div>
+                        <h3 className="font-medium">Required Roles</h3>
+                        <ul className="list-disc list-inside mt-1 space-y-1">
+                            <li className="font-mono text-sm">roles/container.viewer</li>
+                            <li className="font-mono text-sm">roles/container.clusterViewer</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 className="font-medium">How to Grant Permissions</h3>
+                        <ol className="list-decimal list-inside mt-1 space-y-1 text-sm">
+                            <li>Go to the <a href="https://console.cloud.google.com/iam-admin/iam" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">IAM & Admin page</a> in your GCP console</li>
+                            <li>Click "Grant Access" and enter the service account email above</li>
+                            <li>Add both required roles listed above</li>
+                            <li>Click "Save"</li>
+                        </ol>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <input type="hidden" name="gcpServiceAccountKey" value="" />
 
             <div className="pt-4">
                 <Button type="submit" >

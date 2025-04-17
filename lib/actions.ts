@@ -128,16 +128,8 @@ const validateAWSCredentials = (data: { provider: string; awsRoleArn?: string })
 
 const GCPClusterSchema = BaseClusterSchema.extend({
     provider: z.literal("gcp"),
-    gcpServiceAccountKey: z.string()
-        .min(1, "GCP Service Account Key is required")
-        .refine((val) => {
-            try {
-                JSON.parse(val);
-                return true;
-            } catch {
-                return false;
-            }
-        }, "Invalid JSON format for GCP Service Account Key"),
+    gcpProjectId: z.string().min(1, "GCP Project ID is required"),
+    gcpServiceAccountKey: z.string().optional(),
 });
 
 const AzureClusterSchema = BaseClusterSchema.extend({
@@ -164,6 +156,7 @@ export type ClusterState = {
         awsAccessKeyId?: string[];
         awsSecretAccessKey?: string[];
         awsRoleArn?: string[];
+        gcpProjectId?: string[];
         gcpServiceAccountKey?: string[];
         azureTenantId?: string[];
         azureClientId?: string[];
@@ -203,6 +196,7 @@ export async function createCluster(
             awsSecretAccessKey: formData.get('awsSecretAccessKey'),
             awsRoleArn: formData.get('awsRoleArn'),
             // GCP fields
+            gcpProjectId: formData.get('gcpProjectId'),
             gcpServiceAccountKey: formData.get('gcpServiceAccountKey'),
             // Azure fields
             azureTenantId: formData.get('azureTenantId'),
@@ -264,13 +258,14 @@ export async function createCluster(
                 aws_access_key_id,
                 aws_secret_access_key,
                 aws_role_arn,
+                gcp_project_id,
                 gcp_service_account_key,
                 azure_tenant_id,
                 azure_client_id,
                 azure_client_secret,
                 azure_subscription_id,
                 azure_resource_group
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             RETURNING id`;
 
         const values = [
@@ -281,6 +276,7 @@ export async function createCluster(
             null, // aws_access_key_id
             null, // aws_secret_access_key
             data.provider === 'aws' ? data.awsRoleArn : null,
+            data.provider === 'gcp' ? data.gcpProjectId : null,
             data.provider === 'gcp' ? data.gcpServiceAccountKey : null,
             data.provider === 'azure' ? data.azureTenantId : null,
             data.provider === 'azure' ? data.azureClientId : null,
@@ -356,6 +352,7 @@ export async function getClusters() {
                 created_at,
                 aws_access_key_id,
                 aws_role_arn,
+                gcp_project_id,
                 gcp_service_account_key,
                 azure_tenant_id,
                 azure_subscription_id,
@@ -422,6 +419,7 @@ export async function getClusterById(clusterId: number) {
                 created_at,
                 aws_access_key_id,
                 aws_role_arn,
+                gcp_project_id,
                 gcp_service_account_key,
                 azure_tenant_id,
                 azure_subscription_id,
