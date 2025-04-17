@@ -92,9 +92,9 @@ export function GCPClusterForm() {
                         <h3 className="font-medium">How to Grant Permissions</h3>
                         <ol className="list-decimal list-inside mt-1 space-y-1 text-sm">
                             <li>Go to the <a href="https://console.cloud.google.com/iam-admin/iam" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">IAM & Admin page</a> in your GCP console</li>
-                            <li>Click "Grant Access" and enter the service account email above</li>
+                            <li>Click &quot;Grant Access&quot; and enter the service account email above</li>
                             <li>Add both required roles listed above</li>
-                            <li>Click "Save"</li>
+                            <li>Click &quot;Save&quot;</li>
                         </ol>
                     </div>
                 </CardContent>
