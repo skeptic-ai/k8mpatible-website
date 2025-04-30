@@ -4,6 +4,7 @@ import { auth } from '@/auth'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,6 +17,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <Script src="https://js.stripe.com/v3/pricing-table.js" async />
+      </head>
       <body className={inter.className}>
         <div className="min-h-screen flex flex-col">
           {/* Navigation Bar */}

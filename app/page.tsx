@@ -107,72 +107,11 @@ export default function LandingPage() {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12">Simple Pricing</h2>
-          <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
-            <div className="p-8 bg-white rounded-lg shadow-sm">
-              <h3 className="text-2xl font-bold">Free Tier</h3>
-              <p className="mt-4 text-gray-600">
-                Perfect for small teams and individual clusters
-              </p>
-              <ul className="mt-6 space-y-4">
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  Scan one cluster
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  All supported tools
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  Manual scans
-                </li>
-              </ul>
-              <a href="/signup" className="mt-8 block">
-                <button className="w-full px-6 py-3 text-base font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-                  Get Started
-                </button>
-              </a>
-            </div>
-            <div className="p-8 bg-white rounded-lg shadow-sm border-2 border-blue-600">
-              <div className="flex justify-between items-center">
-                <h3 className="text-2xl font-bold">Professional Beta</h3>
-                <span className="px-3 py-1 text-sm text-blue-600 bg-blue-100 rounded-full">Early Access</span>
-              </div>
-              <p className="mt-4 text-gray-600">
-                For teams managing multiple clusters
-              </p>
-              <ul className="mt-6 space-y-4">
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  Multiple clusters
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  All supported tools
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  Priority support
-                </li>
-              </ul>
-              <a href="/signup" className="mt-8 block">
-                <button className="w-full px-6 py-3 text-base font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-                  Join Beta
-                </button>
-              </a>
-            </div>
+          <div className="max-w-5xl mx-auto">
+            <stripe-pricing-table
+              pricing-table-id="prctbl_1RIEOuFFhYS8QAwgZW6EdcC3"
+              publishable-key="pk_live_51QiPXwFFhYS8QAwg0hw11DpUQtLaIGPI1NSH3LBsnIZautMvnhHu6rWVDQiPbVEMW4UttxemJlv9VNa2gmNwzfik00HGRtCXeZ">
+            </stripe-pricing-table>
           </div>
         </div>
       </section>
