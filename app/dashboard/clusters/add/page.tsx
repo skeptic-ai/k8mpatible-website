@@ -68,12 +68,12 @@ export default function AddClusterPage() {
                             With the free tier, you are limited to 1 cluster. Upgrade to the Professional tier to add more clusters.
                         </p>
                         <div className="mb-4">
-                            <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
-                            <stripe-pricing-table
-                                pricing-table-id="prctbl_1RN5jyFFhYS8QAwgBxc2nvMl"
-                                publishable-key="pk_live_51QiPXwFFhYS8QAwg0hw11DpUQtLaIGPI1NSH3LBsnIZautMvnhHu6rWVDQiPbVEMW4UttxemJlv9VNa2gmNwzfik00HGRtCXeZ"
-                            >
-                            </stripe-pricing-table>
+                            <div dangerouslySetInnerHTML={{
+                                __html: `<script async src="https://js.stripe.com/v3/pricing-table.js"></script>
+                                <stripe-pricing-table pricing-table-id="prctbl_1RN5jyFFhYS8QAwgBxc2nvMl"
+                                publishable-key="pk_live_51QiPXwFFhYS8QAwg0hw11DpUQtLaIGPI1NSH3LBsnIZautMvnhHu6rWVDQiPbVEMW4UttxemJlv9VNa2gmNwzfik00HGRtCXeZ">
+                                </stripe-pricing-table>`
+                            }} />
                         </div>
                         <Button
                             variant="outline"

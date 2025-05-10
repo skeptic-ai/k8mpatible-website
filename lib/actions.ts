@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { Pool } from 'pg'
 import { z } from 'zod'
 
-export const pool = new Pool()
+const pool = new Pool()
 const RegisterFormSchema = z.object({
     email: z.string().email({ message: "Please enter a valid email" }),
     name: z.string(),

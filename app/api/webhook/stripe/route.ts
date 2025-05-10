@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Stripe } from 'stripe';
 import { headers } from 'next/headers';
-import { pool } from '@/lib/actions';
-
+import { Pool } from 'pg'
+const pool = new Pool();
 // Initialize Stripe with the API key from environment variables
 const stripe = new Stripe(process.env.STRIPE_API_KEY || '', {
     apiVersion: '2025-03-31.basil', // Using the latest API version
