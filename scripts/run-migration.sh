@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Get database connection details from environment variables or use defaults
-PGHOST=${PGHOST:-localhost}
-PGPORT=${PGPORT:-5432}
-PGUSER=${PGUSER:-k8mpatible}
-PGPASSWORD=${PGPASSWORD:-nextjs123}
-PGDATABASE=${PGDATABASE:-k8mpatible}
+export PGHOST=${PGHOST:-localhost}
+export PGPORT=${PGPORT:-5432}
+export PGUSER=${PGUSER:-k8mpatible}
+export PGPASSWORD=${PGPASSWORD:-nextjs123}
+export PGDATABASE=${PGDATABASE:-k8mpatible}
 
 # Check if migration file is provided
 if [ -z "$1" ]; then
