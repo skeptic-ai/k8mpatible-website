@@ -66,13 +66,11 @@ CREATE TABLE clusters (
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     
     -- AWS specific fields
-    aws_access_key_id VARCHAR(255),
-    aws_secret_access_key TEXT,
     aws_role_arn TEXT,
     
     -- GCP specific fields
-    gcp_service_account_key TEXT,
-    
+    gcp_project_id VARCHAR(255);
+
     -- Azure specific fields
     azure_tenant_id VARCHAR(255),
     azure_client_id VARCHAR(255),
@@ -85,13 +83,13 @@ CREATE TABLE clusters (
     
     -- Ensure credentials are provided based on provider
     CONSTRAINT valid_aws_credentials CHECK (
-        provider != 'aws' OR 
-        (aws_access_key_id IS NOT NULL AND aws_secret_access_key IS NOT NULL) OR
-        (aws_role_arn IS NOT NULL)
+    provider != 'aws' OR 
+      (aws_access_key_id IS NOT NULL AND aws_secret_access_key IS NOT NULL) OR
+      (aws_role_arn IS NOT NULL)
     ),
     CONSTRAINT valid_gcp_credentials CHECK (
-        provider != 'gcp' OR 
-        gcp_service_account_key IS NOT NULL
+      provider != 'gcp' OR 
+      (gcp_project_id IS NOT NULL)
     ),
     CONSTRAINT valid_azure_credentials CHECK (
         provider != 'azure' OR 
