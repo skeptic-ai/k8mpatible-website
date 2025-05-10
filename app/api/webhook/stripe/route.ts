@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Stripe } from 'stripe';
 import { headers } from 'next/headers';
+import { pool } from '@/lib/actions';
 
 // Initialize Stripe with the API key from environment variables
 const stripe = new Stripe(process.env.STRIPE_API_KEY || '', {
@@ -32,16 +33,46 @@ export async function POST(req: NextRequest) {
         // Handle different event types
         if (event.type === 'checkout.session.completed') {
             // Payment is successful and the subscription is created
-            // You can provision the subscription here
             console.log('Checkout session completed:', event.data.object);
+            const session = event.data.object as Stripe.Checkout.Session;
+            const customerEmail = session.customer_details?.email;
+            if (customerEmail) {
+                try {
+                    const client = await pool.connect();
+                    await client.query(
+                        'UPDATE customers SET subscription_tier = $1 WHERE email = $2',
+                        ['professional', customerEmail]
+                    );
+                    console.log(`Updated subscription tier to professional for ${customerEmail}`);
+                    client.release();
+                } catch (dbError) {
+                    console.error(`Database error updating subscription tier: ${dbError instanceof Error ? dbError.message : 'Unknown error'}`);
+                }
+            } else {
+                console.log('No customer email found in checkout session');
+            }
         } else if (event.type === 'invoice.payment_succeeded') {
             // Continue to provision the subscription as payments continue to be made
-            // Store the status in your database and check when a user accesses your service
             console.log('Invoice payment succeeded:', event.data.object);
+            const invoice = event.data.object as Stripe.Invoice;
+            const customerEmail = invoice.customer_email;
+            if (customerEmail) {
+                try {
+                    const client = await pool.connect();
+                    await client.query(
+                        'UPDATE customers SET subscription_tier = $1 WHERE email = $2',
+                        ['professional', customerEmail]
+                    );
+                    console.log(`Updated subscription tier to professional for ${customerEmail}`);
+                    client.release();
+                } catch (dbError) {
+                    console.error(`Database error updating subscription tier: ${dbError instanceof Error ? dbError.message : 'Unknown error'}`);
+                }
+            } else {
+                console.log('No customer email found in invoice');
+            }
         } else if (event.type === 'invoice.payment_failed') {
             // The payment failed or the customer does not have a valid payment method
-            // The subscription becomes past_due. Notify your customer and send them to the
-            // customer portal to update their payment information
             console.log('Invoice payment failed:', event.data.object);
         } else {
             // Handle any other event type, including custom events
