@@ -52,6 +52,7 @@ CREATE TABLE customers
     name VARCHAR(255),
     organization VARCHAR(255),
     email VARCHAR(255),
+    subscription_tier VARCHAR(50) NOT NULL DEFAULT 'free',
     PRIMARY KEY (id)
 );
 CREATE TYPE cloud_provider AS ENUM ('aws', 'gcp', 'azure');

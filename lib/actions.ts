@@ -324,6 +324,42 @@ export type Scan = {
 }
 
 
+export async function getUserSubscriptionAndClusterCount() {
+    const client = await pool.connect()
+    const session = await auth()
+    const email = session?.user?.email || ""
+
+    try {
+        // Get customer ID and subscription tier from email
+        const customerResult = await client.query(
+            'SELECT id, subscription_tier FROM customers WHERE email = $1',
+            [email]
+        )
+
+        if (customerResult.rows.length === 0) {
+            return { subscriptionTier: 'free', clusterCount: 0 }
+        }
+
+        const customerId = customerResult.rows[0].id
+        const subscriptionTier = customerResult.rows[0].subscription_tier
+
+        // Get cluster count
+        const clustersResult = await client.query(
+            'SELECT COUNT(*) as count FROM clusters WHERE customer_id = $1',
+            [customerId]
+        )
+
+        const clusterCount = parseInt(clustersResult.rows[0].count, 10)
+
+        return { subscriptionTier, clusterCount }
+    } catch (error) {
+        console.error('Error fetching subscription and cluster count:', error)
+        return { subscriptionTier: 'free', clusterCount: 0 }
+    } finally {
+        client.release()
+    }
+}
+
 export async function getClusters() {
     const client = await pool.connect()
     const session = await auth()
