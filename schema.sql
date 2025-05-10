@@ -69,7 +69,7 @@ CREATE TABLE clusters (
     aws_role_arn TEXT,
     
     -- GCP specific fields
-    gcp_project_id VARCHAR(255);
+    gcp_project_id VARCHAR(255),
 
     -- Azure specific fields
     azure_tenant_id VARCHAR(255),
