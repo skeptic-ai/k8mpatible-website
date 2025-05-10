@@ -8,6 +8,8 @@ RUN npm ci
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ENV STRIPE_API_KEY=test
+ENV STRIPE_WEBHOOK_SECRET=test
 RUN npm run build
 
 FROM base AS runner
