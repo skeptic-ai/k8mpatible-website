@@ -52,7 +52,7 @@ export default async function RootLayout({
                           Dashboard
                         </Button>
                       </Link>
-                      <Link href="/api/auth/signout">
+                      <Link href="/signout">
                         <Button variant="outline" size="sm">
                           Sign out
                         </Button>

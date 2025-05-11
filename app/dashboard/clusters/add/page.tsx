@@ -105,7 +105,7 @@ export default function AddClusterPage() {
                                     <SelectContent>
                                         <SelectItem value="aws">Amazon Web Services (AWS)</SelectItem>
                                         <SelectItem value="gcp">Google Cloud Platform (GCP)</SelectItem>
-                                        <SelectItem value="azure">Microsoft Azure</SelectItem>
+                                        {/* <SelectItem value="azure">Microsoft Azure</SelectItem> */}
                                     </SelectContent>
                                 </Select>
                             </div>

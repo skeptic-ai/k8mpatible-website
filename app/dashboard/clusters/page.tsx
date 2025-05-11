@@ -19,6 +19,16 @@ export default async function ClustersPage() {
                     Add Cluster
                 </Link>
             </div>
+            <Card className="mb-6 bg-blue-50 border-blue-200">
+                <CardHeader>
+                    <CardTitle className="text-blue-700">Supported Clusters</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-blue-600">
+                        Currently, we support only Google Kubernetes Engine (GKE) and Amazon Elastic Kubernetes Service (EKS) clusters.
+                    </p>
+                </CardContent>
+            </Card>
 
             {clusters.length === 0 ? (
                 <Card>
