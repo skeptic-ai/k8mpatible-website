@@ -67,6 +67,22 @@ export default function LandingPage() {
                 Ultralight service mesh
               </p>
             </div>
+            <div className="p-6 bg-white rounded-lg shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <h3 className="text-xl font-semibold">External-DNS</h3>
+              </div>
+              <p className="mt-2 text-gray-600">
+                DNS automation for Kubernetes services
+              </p>
+            </div>
+            <div className="p-6 bg-white rounded-lg shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <h3 className="text-xl font-semibold">External-Secrets</h3>
+              </div>
+              <p className="mt-2 text-gray-600">
+                Kubernetes external secrets management
+              </p>
+            </div>
           </div>
         </div>
       </section>
