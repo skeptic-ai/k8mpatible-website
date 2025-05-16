@@ -1,3 +1,14 @@
+import {
+  Shield,
+  GitBranch,
+  FlowChart,
+  RefreshCw,
+  Network,
+  Link2,
+  Globe,
+  Key
+} from "lucide-react";
+
 export default function LandingPage() {
   return (
     <div className="bg-white">
@@ -32,39 +43,75 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-center mb-12">Currently Supported Tools</h2>
           <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
             <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold">cert-manager</h3>
+              <div className="flex items-center gap-3 mb-2">
+                <Shield className="h-6 w-6 text-blue-600" />
+                <h3 className="text-xl font-semibold">Cert-Manager</h3>
+              </div>
               <p className="mt-2 text-gray-600">
                 Certificate management controller
               </p>
             </div>
             <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold">ArgoCD</h3>
+              <div className="flex items-center gap-3 mb-2">
+                <GitBranch className="h-6 w-6 text-blue-600" />
+                <h3 className="text-xl font-semibold">ArgoCD</h3>
+              </div>
               <p className="mt-2 text-gray-600">
                 Declarative GitOps CD tool
               </p>
             </div>
             <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold">Argo Workflows</h3>
+              <div className="flex items-center gap-3 mb-2">
+                <FlowChart className="h-6 w-6 text-blue-600" />
+                <h3 className="text-xl font-semibold">Argo Workflows</h3>
+              </div>
               <p className="mt-2 text-gray-600">
                 Container-native workflow engine
               </p>
             </div>
             <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold">Flux</h3>
+              <div className="flex items-center gap-3 mb-2">
+                <RefreshCw className="h-6 w-6 text-blue-600" />
+                <h3 className="text-xl font-semibold">Flux</h3>
+              </div>
               <p className="mt-2 text-gray-600">
                 GitOps toolkit
               </p>
             </div>
             <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold">Istio</h3>
+              <div className="flex items-center gap-3 mb-2">
+                <Network className="h-6 w-6 text-blue-600" />
+                <h3 className="text-xl font-semibold">Istio</h3>
+              </div>
               <p className="mt-2 text-gray-600">
                 Service mesh platform
               </p>
             </div>
             <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold">Linkerd</h3>
+              <div className="flex items-center gap-3 mb-2">
+                <Link2 className="h-6 w-6 text-blue-600" />
+                <h3 className="text-xl font-semibold">Linkerd</h3>
+              </div>
               <p className="mt-2 text-gray-600">
                 Ultralight service mesh
+              </p>
+            </div>
+            <div className="p-6 bg-white rounded-lg shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <Globe className="h-6 w-6 text-blue-600" />
+                <h3 className="text-xl font-semibold">External-DNS</h3>
+              </div>
+              <p className="mt-2 text-gray-600">
+                DNS automation for Kubernetes services
+              </p>
+            </div>
+            <div className="p-6 bg-white rounded-lg shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <Key className="h-6 w-6 text-blue-600" />
+                <h3 className="text-xl font-semibold">External-Secrets</h3>
+              </div>
+              <p className="mt-2 text-gray-600">
+                Kubernetes external secrets management
               </p>
             </div>
           </div>
