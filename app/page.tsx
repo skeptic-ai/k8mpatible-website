@@ -157,7 +157,7 @@ export default function LandingPage() {
                 <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                <span className="font-medium">Automated scans with email/Slack notifications</span>
+                <span className="font-medium">Email/Slack notifications when updates are required</span>
               </div>
             </div>
           </div>
