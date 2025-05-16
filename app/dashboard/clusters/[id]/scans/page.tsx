@@ -82,7 +82,7 @@ export default async function ClusterScansPage(props: { params: tParams }) {
                                                         ))}
                                                         {tool.upgrade_incompatibility?.map((incompatibility: Incompatibility, i: number) => (
                                                             <div key={i} className="text-sm text-yellow-600 bg-yellow-50 p-2 rounded">
-                                                                Tool upgrade required prior to Kubernetes upgrade. This tool version is not compatible with the next Kubernetes version after v{kubeVersion} because it {incompatibility.message}.
+                                                                Tool upgrade required prior to Kubernetes upgrade. This tool version is not compatible with the next Kubernetes version after (v{kubeVersion}) because it {incompatibility.message}.
                                                             </div>
                                                         ))}
                                                     </div>
