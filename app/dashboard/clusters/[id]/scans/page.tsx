@@ -50,40 +50,46 @@ export default async function ClusterScansPage(props: { params: tParams }) {
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                    {scan.discovered_tools.tools?.filter(tool => tool.name !== "Kubernetes").map((tool: Tool, index: number) => (
-                                        <div key={index} className="border rounded-lg p-4">
-                                            <div className="flex justify-between mb-2">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-medium">{tool.name}</span>
-                                                    {tool.current_incompatibility?.length === 0 && (
-                                                        <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">
-                                                            Supported for Current Version
-                                                        </span>
-                                                    )}
-                                                    {tool.upgrade_incompatibility?.length === 0 && (
-                                                        <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">
-                                                            Supported for Next Version
-                                                        </span>
-                                                    )}
+                                    {/* Find Kubernetes tool to get its version */}
+                                    {(() => {
+                                        const kubernetesTool = scan.discovered_tools.tools?.find(tool => tool.name === "Kubernetes");
+                                        const kubeVersion = kubernetesTool?.version || "unknown";
+
+                                        return scan.discovered_tools.tools?.filter(tool => tool.name !== "Kubernetes").map((tool: Tool, index: number) => (
+                                            <div key={index} className="border rounded-lg p-4">
+                                                <div className="flex justify-between mb-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-medium">{tool.name}</span>
+                                                        {tool.current_incompatibility?.length === 0 && (
+                                                            <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">
+                                                                Supported for Current Version
+                                                            </span>
+                                                        )}
+                                                        {tool.upgrade_incompatibility?.length === 0 && (
+                                                            <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">
+                                                                Supported for Next Version
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <span className="text-sm text-gray-500">v{tool.version}</span>
                                                 </div>
-                                                <span className="text-sm text-gray-500">v{tool.version}</span>
+                                                {(tool.current_incompatibility?.length > 0 || tool.upgrade_incompatibility?.length > 0) && (
+                                                    <div className="mt-2 space-y-2">
+                                                        {tool.current_incompatibility?.map((incompatibility: Incompatibility, i: number) => (
+                                                            <div key={i} className="text-sm text-red-600 bg-red-50 p-2 rounded">
+                                                                Tool upgrade required ASAP. This tool version is not compatible with your current Kubernetes version (v{kubeVersion}) because it {incompatibility.message}.
+                                                            </div>
+                                                        ))}
+                                                        {tool.upgrade_incompatibility?.map((incompatibility: Incompatibility, i: number) => (
+                                                            <div key={i} className="text-sm text-yellow-600 bg-yellow-50 p-2 rounded">
+                                                                Tool upgrade required prior to Kubernetes upgrade. This tool version is not compatible with the next Kubernetes version after v{kubeVersion} because it {incompatibility.message}.
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
-                                            {(tool.current_incompatibility?.length > 0 || tool.upgrade_incompatibility?.length > 0) && (
-                                                <div className="mt-2 space-y-2">
-                                                    {tool.current_incompatibility?.map((incompatibility: Incompatibility, i: number) => (
-                                                        <div key={i} className="text-sm text-red-600 bg-red-50 p-2 rounded">
-                                                            Tool upgrade required ASAP. This tool version is not compatible with your current kubernetes version because it {incompatibility.message}.
-                                                        </div>
-                                                    ))}
-                                                    {tool.upgrade_incompatibility?.map((incompatibility: Incompatibility, i: number) => (
-                                                        <div key={i} className="text-sm text-yellow-600 bg-yellow-50 p-2 rounded">
-                                                            Tool upgrade required prior to kubernetes upgrade. This tool version is not compatible with the next kubernetes version because it {incompatibility.message}.
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                        ))
+                                    })()}
                                 </div>
                             </CardContent>
                         </Card>
