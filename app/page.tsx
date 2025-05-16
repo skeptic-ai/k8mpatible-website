@@ -112,6 +112,13 @@ export default function LandingPage() {
                 <div>
                   <h3 className="font-semibold text-xl">Get Upgrade Requirements</h3>
                   <p className="mt-2 text-gray-600">Receive clear guidance on which tools need to be upgraded before your Kubernetes upgrade</p>
+                  <div className="mt-4">
+                    <img
+                      src="/images/guidance-screenshot.png"
+                      alt="Upgrade guidance screenshot"
+                      className="rounded-lg shadow-md w-full max-w-md mx-auto"
+                    />
+                  </div>
                 </div>
               </li>
             </ol>
