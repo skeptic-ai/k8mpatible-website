@@ -72,12 +72,12 @@ export default async function ClusterScansPage(props: { params: tParams }) {
                                                 <div className="mt-2 space-y-2">
                                                     {tool.current_incompatibility?.map((incompatibility: Incompatibility, i: number) => (
                                                         <div key={i} className="text-sm text-red-600 bg-red-50 p-2 rounded">
-                                                            {incompatibility.message}
+                                                            Tool upgrade required ASAP. This tool version is not compatible with your current kubernetes version {incompatibility.message}.
                                                         </div>
                                                     ))}
                                                     {tool.upgrade_incompatibility?.map((incompatibility: Incompatibility, i: number) => (
                                                         <div key={i} className="text-sm text-yellow-600 bg-yellow-50 p-2 rounded">
-                                                            Upgrade Required. Not compatible with the next version of kubernetes, This version {incompatibility.message}
+                                                            Tool upgrade required prior to kubernetes upgrade. This tool version is not compatible with the next kubernetes version {incompatibility.message}.
                                                         </div>
                                                     ))}
                                                 </div>
