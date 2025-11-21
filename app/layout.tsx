@@ -40,6 +40,13 @@ export default async function RootLayout({
                   </Link>
                 </div>
 
+                {/* Navigation Links */}
+                <nav className="hidden md:flex items-center gap-6">
+                  <Link href="/blog" className="text-gray-600 hover:text-gray-900 transition-colors">
+                    Blog
+                  </Link>
+                </nav>
+
                 {/* Auth Buttons */}
                 <div className="flex items-center gap-4">
                   {session ? (
