@@ -58,7 +58,7 @@ export function AWSClusterForm() {
                     className="font-mono"
                 />
                 <p className="text-sm text-gray-500">
-                    The ARN of an IAM role with permissions to access your EKS cluster
+                    The ARN of an IAM role with a cluster access entry for the aws managed policy: AmazonEKSViewPolicy
                 </p>
                 <input type="hidden" name="authMethod" value="role" />
             </div>
