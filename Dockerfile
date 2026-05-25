@@ -1,4 +1,4 @@
-FROM node:20-alpine AS base
+FROM node:22-alpine@sha256:484e1e4a314c575bf177630580c4d13e04f0c85e8b32e8b1e6a1a9ad8872528c AS base
 WORKDIR /app
 
 FROM base AS deps
@@ -8,8 +8,6 @@ RUN npm ci
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-ENV STRIPE_API_KEY=test
-ENV STRIPE_WEBHOOK_SECRET=test
 RUN npm run build
 
 FROM base AS runner
