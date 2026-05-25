@@ -1,4 +1,14 @@
 node_modules
 .git
 .next
-.env
+.env*
+.npmrc
+*.pem
+*.key
+id_rsa*
+.vscode
+.idea
+.DS_Store
+docker-compose*.yaml
+.github
+charts
